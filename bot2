@@ -1,0 +1,40 @@
+from aiogram import Bot, Dispatcher, types, executor
+from asyncio import sleep
+import keyboard, os
+
+def exit():
+    os._exit(os.EX_OK)
+
+bot = Bot('6006133347:AAGEcFc2qHboyg2hVkRv05uJ5yn8GWZz95k')
+dp=Dispatcher(bot)
+@dp.message_handler(commands=['start','help'])
+async def on_message(message: types.Message):
+    await bot.send_message (message.from_user.id, f"Привет, {message.from_user.username}, нажмите /run")
+
+@dp.message_handler(commands=['run'])   
+async def on_message(message: types.Message):
+    await bot.send_message (message.from_user.id, "Мой ход")
+    bot_data1 = await bot.send_dice(message.from_user.id)
+    bot_data1 = bot_data1['dice']['value']
+    bot_data2 = await bot.send_dice(message.from_user.id)
+    bot_data2 = bot_data2['dice']['value']
+    print(bot_data:=bot_data1+bot_data2)
+    await sleep(4.5)
+    await bot.send_message (message.from_user.id, "Ваш ход")
+    user_data1 = await bot.send_dice(message.from_user.id)
+    user_data1 = user_data1['dice']['value']
+    user_data2 = await bot.send_dice(message.from_user.id)
+    user_data2 = user_data2['dice']['value']
+    print(user_data := user_data1 + user_data2)
+    await sleep(4.5)
+    if bot_data > user_data:
+        await bot.send_message (message.from_user.id, "Вы проиграли")
+    elif bot_data < user_data:
+        await bot.send_message (message.from_user.id, "Поздравляю, Вы выиграли")
+    else:
+        await bot.send_message (message.from_user.id, "Ничья")
+
+if __name__=='__main__':
+   
+    keyboard.add_hotkey("1", exit)
+    executor.start_polling(dp,skip_updates =True)
